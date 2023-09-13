@@ -9,28 +9,12 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ClapToFindMyPhone">
 
-        <activity
-            android:name=".ui.SettingsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.SplashScreenActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+        <service android:name="h.k.claptofindmyphone.services.ServiceRecordAudio" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name=".ui.MainActivity"
-            android:exported="false" />
     </application>
 
 </manifest>

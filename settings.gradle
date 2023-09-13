@@ -14,3 +14,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Clap to Find My Phone"
 include ':app'
+include ':clap'

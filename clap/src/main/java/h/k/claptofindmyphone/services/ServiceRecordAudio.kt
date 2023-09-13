@@ -17,10 +17,7 @@ import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import h.k.claptofindmyphone.R
-import h.k.claptofindmyphone.databinding.ActivityAlarmBinding
-import h.k.claptofindmyphone.ui.MainActivity
 import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 import java.util.*
 
@@ -31,8 +28,6 @@ class ServiceRecordAudio : Service() {
     private var audioRecord: AudioRecord? = null
     private var classificationInterval = 500L // how often should classification run in milli-secs
     private lateinit var handler: Handler // background thread handler to run classification
-    lateinit var sharedPeref: SharedPreferences
-    lateinit var sharedPerefEditor: SharedPreferences.Editor
     lateinit var gson: Gson
     private var winManager: WindowManager? = null
     private var winParam: WindowManager.LayoutParams? = null
@@ -53,7 +48,7 @@ class ServiceRecordAudio : Service() {
                 PendingIntent.getActivity(
                     this,
                     0,
-                    Intent(this, MainActivity::class.java),
+                    Intent(this, RecordAudioProxy.serverCls),
                     PendingIntent.FLAG_MUTABLE
                 )
         } else {
@@ -61,7 +56,7 @@ class ServiceRecordAudio : Service() {
                 PendingIntent.getActivity(
                     this,
                     0,
-                    Intent(this, MainActivity::class.java),
+                    Intent(this, RecordAudioProxy.serverCls),
                     PendingIntent.FLAG_ONE_SHOT
                 )
         }
@@ -76,7 +71,7 @@ class ServiceRecordAudio : Service() {
             ""
         }
         val notification: Notification = Notification.Builder(this, "1")
-            .setSmallIcon(R.drawable.logo) // the status icon
+            .setSmallIcon(R.drawable.clap) // the status icon
             .setWhen(System.currentTimeMillis()) // the time stamp
             .setContentTitle("Clap To Find My Phone") // the label of the entry
             .setContentIntent(notiIntent) // The intent to send when the entry is clicked
@@ -108,10 +103,6 @@ class ServiceRecordAudio : Service() {
             RingtoneManager.TYPE_RINGTONE))
 
         gson = Gson()
-        sharedPeref = this.getSharedPreferences(
-            "ctfmf", Context.MODE_PRIVATE
-        )
-        sharedPerefEditor = sharedPeref.edit()
 
         handler = Handler()
         touchIcon!!.findViewById<View>(R.id.animationView).setOnClickListener {
@@ -178,12 +169,18 @@ class ServiceRecordAudio : Service() {
                         "qq",
                         filteredModelOutput[0].label.toString() + " , " + filteredModelOutput[0].index.toString()
                     )
-                    if (filteredModelOutput[0].index == 56 || filteredModelOutput[0].index == 57 || filteredModelOutput[0].index == 58) {
+                    //Hands , 56
+                    //Finger snapping , 57
+                    //Cap gun , 425
+                    if (filteredModelOutput[0].index == 56
+                        || filteredModelOutput[0].index == 57
+                        || filteredModelOutput[0].index == 58
+                        || filteredModelOutput[0].index == 425) {
 
-                        if (sharedPeref.getBoolean("melody_clap", false)) {
+                        if (RecordAudioProxy.getBoolean("melody_clap", false)) {
                             ringtone.play()
                         }
-                        if (sharedPeref.getBoolean("flash_clap", false)) {
+                        if (RecordAudioProxy.getBoolean("flash_clap", false)) {
                             if (this@ServiceRecordAudio.packageManager?.hasSystemFeature(
                                     PackageManager.FEATURE_CAMERA_FLASH
                                 ) == true
@@ -212,12 +209,12 @@ class ServiceRecordAudio : Service() {
                                 }
                             }
                         }
-                        if (sharedPeref.getBoolean("vibrate_clap", false)) {
+                        if (RecordAudioProxy.getBoolean("vibrate_clap", false)) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                vibrator.vibrate(VibrationEffect.createOneShot(sharedPeref.getInt("melody_length_clap",500).toLong(), VibrationEffect.DEFAULT_AMPLITUDE));
+                                vibrator.vibrate(VibrationEffect.createOneShot(RecordAudioProxy.getInt("melody_length_clap",500).toLong(), VibrationEffect.DEFAULT_AMPLITUDE));
                             } else {
                                 //deprecated in API 26
-                                vibrator.vibrate(sharedPeref.getInt("melody_length_clap",500).toLong());
+                                vibrator.vibrate(RecordAudioProxy.getInt("melody_length_clap",500).toLong());
                             }
                         }
 
@@ -231,10 +228,10 @@ class ServiceRecordAudio : Service() {
 
                     } else if (filteredModelOutput[0].index == 426 || filteredModelOutput[0].index == 479 || filteredModelOutput[0].index == 396 || filteredModelOutput[0].index == 79 || filteredModelOutput[0].index == 35) {
 
-                        if (sharedPeref.getBoolean("melody_whistle", false)) {
+                        if (RecordAudioProxy.getBoolean("melody_whistle", false)) {
                             ringtone.play()
                         }
-                        if (sharedPeref.getBoolean("flash_whistle", false)) {
+                        if (RecordAudioProxy.getBoolean("flash_whistle", false)) {
                             if (this@ServiceRecordAudio.packageManager?.hasSystemFeature(
                                     PackageManager.FEATURE_CAMERA_FLASH
                                 ) == true
@@ -263,12 +260,12 @@ class ServiceRecordAudio : Service() {
                                 }
                             }
                         }
-                        if (sharedPeref.getBoolean("vibrate_whistle", false)) {
+                        if (RecordAudioProxy.getBoolean("vibrate_whistle", false)) {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                vibrator.vibrate(VibrationEffect.createOneShot(sharedPeref.getInt("melody_length_clap",500).toLong(), VibrationEffect.DEFAULT_AMPLITUDE));
+                                vibrator.vibrate(VibrationEffect.createOneShot(RecordAudioProxy.getInt("melody_length_clap",500).toLong(), VibrationEffect.DEFAULT_AMPLITUDE));
                             } else {
                                 //deprecated in API 26
-                                vibrator.vibrate(sharedPeref.getInt("melody_length_clap",500).toLong());
+                                vibrator.vibrate(RecordAudioProxy.getInt("melody_length_clap",500).toLong());
                             }
                         }
                         try {

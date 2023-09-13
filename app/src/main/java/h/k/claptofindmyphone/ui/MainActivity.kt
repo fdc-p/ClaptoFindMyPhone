@@ -19,13 +19,12 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.gson.Gson
 import h.k.claptofindmyphone.R
 import h.k.claptofindmyphone.databinding.ActivityMainBinding
+import h.k.claptofindmyphone.services.RecordAudioProxy
 import h.k.claptofindmyphone.services.ServiceRecordAudio
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    lateinit var sharedPeref: SharedPreferences
-    lateinit var sharedPerefEditor: SharedPreferences.Editor
     var gson= Gson()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -33,39 +32,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        sharedPeref = this.getSharedPreferences(
-            "ctfmf", Context.MODE_PRIVATE
-        )
-        sharedPerefEditor = sharedPeref.edit()
+
+        RecordAudioProxy.onApplicationCreate(this, MainActivity::class.java)
+        RecordAudioProxy.onConfigInit()
+
         if (isServiceRunning(ServiceRecordAudio::class.java)){
             binding.switchBtn.isChecked=true
         }
         animateNavigationDrawer()
         menuPoping()
-        if (!sharedPeref.contains("flash_clap")){
-            sharedPerefEditor.putBoolean("flash_whistle", false)
-            sharedPerefEditor.putBoolean("flash_clap", false)
-            sharedPerefEditor.putBoolean("vibrate_whistle", false)
-            sharedPerefEditor.putBoolean("vibrate_clap", false)
-            sharedPerefEditor.putBoolean("melody_whistle", true)
-            sharedPerefEditor.putBoolean("melody_clap", true)
-            sharedPerefEditor.putInt("melody_length_clap", 500)
-            sharedPerefEditor.putInt("melody_length_whistle", 500)
-            sharedPerefEditor.putInt("melody_volume_whistle", 100)
-            sharedPerefEditor.putInt("melody_volume_clap", 100)
-
-        }
 
         binding.switchBtn.setOnCheckedChangeListener { compoundButton, isChecked ->
             if (isChecked){
                 if (!isServiceRunning(ServiceRecordAudio::class.java)){
-                    val i = Intent(this, ServiceRecordAudio::class.java)
-                    startForegroundService(i)
+                    RecordAudioProxy.startForegroundService(this)
                     binding.switchText.text="Stop"
                 }
             }
             else{
-                stopService(Intent(this, ServiceRecordAudio::class.java))
+                RecordAudioProxy.stopService(this)
                 binding.switchText.text="Start"
 
             }
