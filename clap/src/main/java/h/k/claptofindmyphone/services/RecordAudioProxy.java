@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Build;
 
 public class RecordAudioProxy {
+    public static boolean ENABLE_LOG = false;
     public static Class<?> serverCls;
 
     public static void onApplicationCreate(Context context, Class<?> cls) {

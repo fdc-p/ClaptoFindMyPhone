@@ -16,7 +16,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
-import com.google.gson.Gson
 import h.k.claptofindmyphone.R
 import org.tensorflow.lite.task.audio.classifier.AudioClassifier
 import java.util.*
@@ -28,7 +27,6 @@ class ServiceRecordAudio : Service() {
     private var audioRecord: AudioRecord? = null
     private var classificationInterval = 500L // how often should classification run in milli-secs
     private lateinit var handler: Handler // background thread handler to run classification
-    lateinit var gson: Gson
     private var winManager: WindowManager? = null
     private var winParam: WindowManager.LayoutParams? = null
     private var touchIcon: View? = null
@@ -102,8 +100,6 @@ class ServiceRecordAudio : Service() {
         ringtone = RingtoneManager.getRingtone(applicationContext, RingtoneManager.getActualDefaultRingtoneUri(this,
             RingtoneManager.TYPE_RINGTONE))
 
-        gson = Gson()
-
         handler = Handler()
         touchIcon!!.findViewById<View>(R.id.animationView).setOnClickListener {
             ringtone.stop()
@@ -128,7 +124,6 @@ class ServiceRecordAudio : Service() {
         audioRecord?.stop()
         audioRecord = null
         audioClassifier = null
-//        Log.e("firstday",recorder!!.maxAmplitude.toString())
 //        recorder!!.stop();
 //        recorder!!.release();
     }
@@ -165,10 +160,11 @@ class ServiceRecordAudio : Service() {
 
                 val finishTime = System.currentTimeMillis()
                 if (filteredModelOutput.size > 0) {
-                    Log.e(
-                        "qq",
-                        filteredModelOutput[0].label.toString() + " , " + filteredModelOutput[0].index.toString()
-                    )
+
+                    if(RecordAudioProxy.ENABLE_LOG) {
+                        Log.e("qq", filteredModelOutput[0].label.toString() + " , " + filteredModelOutput[0].index.toString())
+                    }
+
                     //Hands , 56
                     //Finger snapping , 57
                     //Cap gun , 425
@@ -275,10 +271,10 @@ class ServiceRecordAudio : Service() {
                         }
 
                     }
-
-
                 }
-                Log.d("TAG", "Latency = ${finishTime - startTime}ms")
+                if(RecordAudioProxy.ENABLE_LOG) {
+                    Log.d("qq", "Latency = ${finishTime - startTime}ms")
+                }
 
                 // Updating the UI
 
