@@ -38,7 +38,6 @@ class ServiceRecordAudio : Service() {
     private var winParam: WindowManager.LayoutParams? = null
     private var touchIcon: View? = null
     private var displayMetrics: DisplayMetrics? = null
-    private lateinit var bindingTouchIconBinding: ActivityAlarmBinding
     lateinit var vibrator: Vibrator
     private lateinit var ringtone: Ringtone
     lateinit var cameraManager: CameraManager
@@ -103,7 +102,6 @@ class ServiceRecordAudio : Service() {
         winParam!!.gravity = (Gravity.TOP or Gravity.LEFT)
         winParam!!.format = PixelFormat.RGBA_8888
         winParam!!.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-        bindingTouchIconBinding = ActivityAlarmBinding.bind(touchIcon!!)
 
         vibrator=this.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         ringtone = RingtoneManager.getRingtone(applicationContext, RingtoneManager.getActualDefaultRingtoneUri(this,
@@ -116,7 +114,7 @@ class ServiceRecordAudio : Service() {
         sharedPerefEditor = sharedPeref.edit()
 
         handler = Handler()
-        bindingTouchIconBinding.animationView.setOnClickListener {
+        touchIcon!!.findViewById<View>(R.id.animationView).setOnClickListener {
             ringtone.stop()
             winManager?.removeView(touchIcon)
 
