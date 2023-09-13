@@ -49,6 +49,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <ImageView
+                android:visibility="gone"
                 android:id="@+id/his_btn"
                 android:layout_width="@dimen/_50sdp"
                 android:padding="@dimen/_14sdp"

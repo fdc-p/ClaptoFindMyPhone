@@ -19,7 +19,6 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.gson.Gson
 import h.k.claptofindmyphone.R
 import h.k.claptofindmyphone.databinding.ActivityMainBinding
-import h.k.claptofindmyphone.models.RecordModel
 import h.k.claptofindmyphone.services.ServiceRecordAudio
 
 
@@ -56,12 +55,6 @@ class MainActivity : AppCompatActivity() {
             sharedPerefEditor.putInt("melody_volume_clap", 100)
 
         }
-        if (!sharedPeref.contains("record")){
-            var dataArray = ArrayList<RecordModel>()
-            sharedPerefEditor.putString("record", gson.toJson(dataArray))
-            sharedPerefEditor.apply()
-        }
-
 
         binding.switchBtn.setOnCheckedChangeListener { compoundButton, isChecked ->
             if (isChecked){
@@ -99,10 +92,10 @@ class MainActivity : AppCompatActivity() {
 //            startActivityForResult(intent, 999)
             startActivity(Intent(this,SettingsActivity::class.java))
         }
-        binding.hisBtn.setOnClickListener {
-            binding.hisBtn.animate().rotation(360F)
-            startActivity(Intent(this,RecordActivity::class.java))
-        }
+//        binding.hisBtn.setOnClickListener {
+//            binding.hisBtn.animate().rotation(360F)
+//            startActivity(Intent(this,RecordActivity::class.java))
+//        }
     }
 
     private fun isServiceRunning(serviceClass: Class<*>): Boolean {
@@ -155,11 +148,11 @@ class MainActivity : AppCompatActivity() {
                         binding.drawerLayout.closeDrawers()
                         true
                     }
-                    R.id.history -> {
-                        startActivity(Intent(this,RecordActivity::class.java))
-                        binding.drawerLayout.closeDrawers()
-                        true
-                    }
+//                    R.id.history -> {
+//                        startActivity(Intent(this,RecordActivity::class.java))
+//                        binding.drawerLayout.closeDrawers()
+//                        true
+//                    }
                     R.id.more_apps -> {
                         val uri =
                             Uri.parse("https://play.google.com/store/apps/developer?id=Westminster+Pro+Apps")
